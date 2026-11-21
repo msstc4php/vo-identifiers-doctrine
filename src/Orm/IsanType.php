@@ -21,6 +21,6 @@ final class IsanType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 26;
+        return Isan::MAX_LENGTH;
     }
 }

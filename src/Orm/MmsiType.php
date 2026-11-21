@@ -21,6 +21,6 @@ final class MmsiType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 9;
+        return Mmsi::MAX_LENGTH;
     }
 }

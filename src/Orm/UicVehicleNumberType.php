@@ -21,6 +21,6 @@ final class UicVehicleNumberType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 12;
+        return UicVehicleNumber::MAX_LENGTH;
     }
 }

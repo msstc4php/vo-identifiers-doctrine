@@ -21,6 +21,6 @@ final class IsniType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 16;
+        return Isni::MAX_LENGTH;
     }
 }

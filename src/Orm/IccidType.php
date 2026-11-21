@@ -21,6 +21,6 @@ final class IccidType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 20;
+        return Iccid::MAX_LENGTH;
     }
 }

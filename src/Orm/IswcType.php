@@ -21,6 +21,6 @@ final class IswcType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 11;
+        return Iswc::MAX_LENGTH;
     }
 }

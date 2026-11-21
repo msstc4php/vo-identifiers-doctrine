@@ -21,6 +21,6 @@ final class S10ItemIdentifierType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 13;
+        return S10ItemIdentifier::MAX_LENGTH;
     }
 }

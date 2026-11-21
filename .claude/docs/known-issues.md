@@ -11,3 +11,8 @@
 - `Imei::equals()` (14/15 digits) and `Isbn::equals()` (ISBN-10/13) span forms while the stored string keeps the form given: a UNIQUE column
   or string-keyed index sees two values. The types store the form as given on purpose (canonical form of the value object); callers normalise.
 - Subscriber identities (`id_imsi`, `id_iccid`, `id_eid`, `id_imei`, `id_imeisv`) are stored unmasked; `masked()` is display only.
+- **Column lengths come from `Vo::MAX_LENGTH`** (vo-identifiers, wave 3 review CR-009); the length-boundary tests (longest form, one
+  character more is a format error) live in vo-identifiers `IdentifierContractTest`. `Tests\Support\Samples::strings()` must list every
+  registered type in registrar order (`testTheSamplesCoverEveryRegisteredType`).
+- Reading a legacy non-canonical stored form succeeds and normalises (the types call `Vo::from()`); a UNIQUE column can then hold the
+  legacy and the canonical spelling of one value until rewritten.

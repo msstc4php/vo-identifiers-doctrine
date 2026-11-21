@@ -21,6 +21,6 @@ final class ImoNumberType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 10;
+        return ImoNumber::MAX_LENGTH;
     }
 }

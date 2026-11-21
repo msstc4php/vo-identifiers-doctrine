@@ -21,6 +21,6 @@ final class UnNumberType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 6;
+        return UnNumber::MAX_LENGTH;
     }
 }

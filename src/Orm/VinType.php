@@ -21,6 +21,6 @@ final class VinType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 17;
+        return Vin::MAX_LENGTH;
     }
 }

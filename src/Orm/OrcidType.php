@@ -21,6 +21,6 @@ final class OrcidType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 19;
+        return Orcid::MAX_LENGTH;
     }
 }

@@ -21,6 +21,6 @@ final class EnergyIdentificationCodeType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 16;
+        return EnergyIdentificationCode::MAX_LENGTH;
     }
 }

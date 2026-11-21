@@ -21,6 +21,6 @@ final class EidType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 32;
+        return Eid::MAX_LENGTH;
     }
 }

@@ -52,9 +52,12 @@ use MSSTC4PHP\ValueObject\Identifiers\Publication\Isbn;
 use MSSTC4PHP\ValueObject\Identifiers\Transport\Mmsi;
 use Override;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use ReflectionMethod;
 
 #[CoversClass(ArkType::class)]
 #[CoversClass(DoiType::class)]
@@ -96,6 +99,8 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(TypeRegistrar::class)]
 final class StringTypesTest extends TestCase
 {
+    private const string BAD_STORED_PART = 'zz9qq';
+
     private SQLitePlatform $platform;
 
     #[Override]
@@ -105,7 +110,7 @@ final class StringTypesTest extends TestCase
         $this->platform = new SQLitePlatform();
     }
 
-    #[DataProviderExternal(Samples::class, 'stringPairs')]
+    #[DataProviderExternal(Samples::class, 'strings')]
     public function testRoundTripsTheCanonicalForm(string $name, StringConvertible $vo): void
     {
         $type = Type::getType($name);
@@ -118,25 +123,63 @@ final class StringTypesTest extends TestCase
         self::assertSame((string) $vo, (string) $restored);
     }
 
-    #[DataProviderExternal(Samples::class, 'stringLengths')]
-    public function testColumnFitsTheLongestAcceptedForm(string $name, StringConvertible $vo, int $length, bool $atMax): void
+    public function testTheSamplesCoverEveryRegisteredType(): void
     {
-        $isText = \in_array($name, Samples::TEXT_TYPES, true);
-        self::assertSame(
-            $isText ? $this->platform->getClobTypeDeclarationSQL([]) : \sprintf('VARCHAR(%d)', $length),
-            Type::getType($name)->getSQLDeclaration([], $this->platform),
-        );
-        if ($length > 0) {
-            self::assertLessThanOrEqual($length, \mb_strlen((string) $vo));
+        $names = [];
+        foreach (Samples::strings() as [$name]) {
+            $names[] = $name;
         }
 
-        if (!$atMax) {
-            return;
-        }
+        self::assertSame(\array_keys(TypeRegistrar::types()), $names);
+    }
 
-        self::assertSame($length, \mb_strlen((string) $vo));
-        $this->expectException(InvalidValueObjectException::class);
-        $vo::from($vo . \mb_substr((string) $vo, -1));
+    /**
+     * @param class-string<StringConvertible> $class
+     * @param non-empty-string $longest
+     */
+    #[DataProviderExternal(Samples::class, 'bounded')]
+    public function testTheColumnIsTheValueObjectsMaxLength(string $name, string $class, string $longest): void
+    {
+        $maxLength = new ReflectionClass($class)->getConstant('MAX_LENGTH');
+        self::assertIsInt($maxLength);
+
+        self::assertSame(\sprintf('VARCHAR(%d)', $maxLength), Type::getType($name)->getSQLDeclaration([], $this->platform));
+        $stored = Type::getType($name)->convertToDatabaseValue($class::from($longest), $this->platform);
+        self::assertIsString($stored);
+        self::assertSame($maxLength, \mb_strlen($stored));
+    }
+
+    #[DataProviderExternal(Samples::class, 'textNames')]
+    public function testAnUnboundedTypeIsAClob(string $name): void
+    {
+        self::assertSame($this->platform->getClobTypeDeclarationSQL([]), Type::getType($name)->getSQLDeclaration([], $this->platform));
+    }
+
+    /**
+     * @return iterable<string, array{non-empty-string, class-string}>
+     */
+    public static function registered(): iterable
+    {
+        foreach (TypeRegistrar::types() as $name => $class) {
+            yield $name => [$name, $class];
+        }
+    }
+
+    /**
+     * @param class-string $class
+     */
+    #[DataProvider('registered')]
+    public function testTheNameIsIdPlusTheSnakeCaseShortNameOfTheValueObject(string $name, string $class): void
+    {
+        TypeRegistrar::registerAll();
+        $type = Type::getType($name);
+        $valueObject = new ReflectionMethod($type, 'valueObjectClass')->invoke($type);
+        self::assertIsString($valueObject);
+        self::assertTrue(\class_exists($valueObject));
+        $shortName = new ReflectionClass($valueObject)->getShortName();
+
+        self::assertSame('id_' . \strtolower((string) \preg_replace('/(?<!^)[A-Z]/', '_$0', $shortName)), $name);
+        self::assertSame($name, \constant($class . '::NAME'));
     }
 
     #[DataProviderExternal(Samples::class, 'stringNames')]
@@ -148,18 +191,42 @@ final class StringTypesTest extends TestCase
         self::assertNull($type->convertToPHPValue(null, $this->platform));
     }
 
-    #[DataProviderExternal(Samples::class, 'stringInvalids')]
-    public function testInvalidStoredValueThrowsWithoutEchoingIt(string $name, string $invalid): void
+    #[DataProviderExternal(Samples::class, 'badStored')]
+    public function testAnInvalidStoredValueThrowsWithoutEchoingIt(string $name, string $invalid): void
     {
         try {
             Type::getType($name)->convertToPHPValue($invalid, $this->platform);
             self::fail('An invalid stored value was accepted.');
         } catch (InvalidValueObjectException $exception) {
+            self::assertStringNotContainsString(self::BAD_STORED_PART, $exception->getMessage());
+        }
+    }
+
+    #[DataProviderExternal(Samples::class, 'wrongCheck')]
+    public function testAStoredValueWithAWrongCheckThrows(string $name, string $invalid, string $reason): void
+    {
+        try {
+            Type::getType($name)->convertToPHPValue($invalid, $this->platform);
+            self::fail('A stored value with a wrong check was accepted.');
+        } catch (InvalidValueObjectException $exception) {
+            self::assertStringEndsWith(' ' . $reason, $exception->getMessage());
             self::assertStringNotContainsString($invalid, $exception->getMessage());
         }
     }
 
-    #[DataProviderExternal(Samples::class, 'stringPairs')]
+    #[DataProviderExternal(Samples::class, 'legacyForms')]
+    public function testALegacyStoredFormIsReadAndNormalised(string $name, string $stored, string $canonical): void
+    {
+        $type = Type::getType($name);
+
+        $restored = $type->convertToPHPValue($stored, $this->platform);
+
+        self::assertInstanceOf(StringConvertible::class, $restored);
+        self::assertSame($canonical, (string) $restored);
+        self::assertSame($canonical, $type->convertToDatabaseValue($restored, $this->platform));
+    }
+
+    #[DataProviderExternal(Samples::class, 'strings')]
     public function testRefusesAValueObjectOfAnotherClassOnWrite(string $name, StringConvertible $vo): void
     {
         $foreign = $vo instanceof Isbn ? Mmsi::from('366123456') : Isbn::from('9780306406157');

@@ -21,6 +21,6 @@ final class ImeisvType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 16;
+        return Imeisv::MAX_LENGTH;
     }
 }

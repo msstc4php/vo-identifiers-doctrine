@@ -21,6 +21,6 @@ final class AirWaybillNumberType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 11;
+        return AirWaybillNumber::MAX_LENGTH;
     }
 }

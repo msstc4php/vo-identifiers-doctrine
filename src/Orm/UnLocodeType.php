@@ -21,6 +21,6 @@ final class UnLocodeType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 5;
+        return UnLocode::MAX_LENGTH;
     }
 }

@@ -21,6 +21,6 @@ final class IcaoAirportCodeType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 4;
+        return IcaoAirportCode::MAX_LENGTH;
     }
 }

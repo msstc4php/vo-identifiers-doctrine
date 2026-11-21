@@ -40,16 +40,21 @@ Symfony: map `TypeRegistrar::types()` under `doctrine.dbal.types` (ORM) or `doct
 
 Every name is `id_` plus the snake_case of the class short name (`ContainerNumber` is `id_container_number`,
 `Iso15459Identifier` is `id_iso15459_identifier`). The ORM column is `VARCHAR(n)`, `n` being the characters of the longest
-stored form the class accepts. A class with no upper bound (`Ark`, `Doi`, `DataIdentifierField`, `DataIdentifierString`,
+stored form the class accepts: the type returns the value object's `MAX_LENGTH` constant, so the column follows the class. A class with no upper bound (`Ark`, `Doi`, `DataIdentifierField`, `DataIdentifierString`,
 `Iso15459Identifier`) maps to vo-base-doctrine's `AbstractTextVoType`, a CLOB/TEXT column; a TEXT column cannot carry a
-plain index on every platform (MySQL needs a prefix length), so index a derived key instead. The ODM field is a BSON
+plain index on every platform (MySQL needs a prefix length), so index a derived key instead. Where only a narrower subset is
+stored, a custom type with a `VARCHAR` column is fine: an `Iso15459Identifier` carried in a `J` licence-plate field is at most
+35 characters (MH10.8.2), so a column of licence plates only can be `VARCHAR(35)`; `Iso15459Identifier` itself has no cap. The ODM field is a BSON
 string without a length.
 
 `n` counts characters, not bytes. Only `Doi`, `Ark` and the data-identifier classes can hold non-ASCII text, and they are
 text columns.
 
 On write a type accepts only its own value-object class: an `Isbn` given to `id_mmsi` throws `InvalidArgumentException`.
-A stored value that no longer parses throws the value object's own exception on read, not a DBAL `ConversionException`.
+A stored value that no longer parses (malformed, empty, or a wrong check digit) throws the value object's own exception on
+read, not a DBAL `ConversionException`, and the message does not contain the value. A stored value in a non-canonical form
+the class still accepts (a hyphenated ISBN, a compact ISSN, an IMEI with spaces, a CAS number with leading zeros) is read
+and normalised; the next write stores the canonical form.
 
 Values are stored as the value object holds them (canonical form): ISSN and ORCID with their hyphens, a CAS number as
 `7732-18-5`, an IMEI without spaces, an MH10.8.2 message with its RS, GS and EOT control characters. Subscriber identities

@@ -21,6 +21,6 @@ final class WmiType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 3;
+        return Wmi::MAX_LENGTH;
     }
 }

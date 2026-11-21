@@ -21,6 +21,6 @@ final class MpanType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 21;
+        return Mpan::MAX_LENGTH;
     }
 }

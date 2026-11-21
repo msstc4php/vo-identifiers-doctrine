@@ -21,6 +21,6 @@ final class IsmnType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 13;
+        return Ismn::MAX_LENGTH;
     }
 }

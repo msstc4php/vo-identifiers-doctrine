@@ -21,6 +21,6 @@ final class HsCodeType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 6;
+        return HsCode::MAX_LENGTH;
     }
 }

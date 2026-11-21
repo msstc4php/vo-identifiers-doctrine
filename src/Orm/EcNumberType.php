@@ -21,6 +21,6 @@ final class EcNumberType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 9;
+        return EcNumber::MAX_LENGTH;
     }
 }

@@ -21,6 +21,6 @@ final class ImsiType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 15;
+        return Imsi::MAX_LENGTH;
     }
 }

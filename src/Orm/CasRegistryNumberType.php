@@ -21,6 +21,6 @@ final class CasRegistryNumberType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 12;
+        return CasRegistryNumber::MAX_LENGTH;
     }
 }

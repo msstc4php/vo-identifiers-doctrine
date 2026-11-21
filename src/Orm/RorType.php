@@ -21,6 +21,6 @@ final class RorType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 9;
+        return Ror::MAX_LENGTH;
     }
 }

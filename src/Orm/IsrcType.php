@@ -21,6 +21,6 @@ final class IsrcType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 12;
+        return Isrc::MAX_LENGTH;
     }
 }

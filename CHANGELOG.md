@@ -14,3 +14,6 @@
 - Contract test: every non-abstract value object of the package has exactly one type per branch.
 - ORM round trip of an MH10.8.2 envelope with RS/GS/EOT characters, a hyphenated CAS number, a 14-digit IMEI and a DOI
   with Unicode in the suffix; the ODM round trip runs when MongoDB is reachable at `MONGODB_URI`.
+- The ORM column length is the value object's `MAX_LENGTH` (vo-identifiers), no longer a copied number; tests assert it per
+  type, assert that the samples cover every registered type, that each name is `id_` plus the snake case of the value object's
+  short name, and pin the read of an empty value, a wrong check digit and a legacy non-canonical form.

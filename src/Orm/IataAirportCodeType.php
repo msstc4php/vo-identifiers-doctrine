@@ -21,6 +21,6 @@ final class IataAirportCodeType extends AbstractStringVoType
     #[Override]
     protected function columnLength(): int
     {
-        return 3;
+        return IataAirportCode::MAX_LENGTH;
     }
 }
