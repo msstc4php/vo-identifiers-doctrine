@@ -1,0 +1,91 @@
+{
+    "name": "msstc4php/vo-identifiers-doctrine",
+    "description": "Doctrine ORM and MongoDB ODM types for msstc4php/vo-identifiers.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "value-object",
+        "identifiers",
+        "isbn",
+        "vin",
+        "imei",
+        "doctrine",
+        "dbal",
+        "orm",
+        "mongodb-odm",
+        "bridge",
+        "ddd"
+    ],
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/msstc4php/vo-base"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/msstc4php/vo-base-doctrine"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/msstc4php/vo-gs1"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/msstc4php/vo-identifiers"
+        }
+    ],
+    "require": {
+        "php": ">=8.4",
+        "msstc4php/vo-base-doctrine": "^1.2",
+        "msstc4php/vo-identifiers": "^0.1"
+    },
+    "require-dev": {
+        "doctrine/dbal": "^4.4",
+        "doctrine/mongodb-odm": "^2.9",
+        "doctrine/orm": "^3.3",
+        "friendsofphp/php-cs-fixer": "^3.76",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-doctrine": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpunit/phpunit": ">=11.0",
+        "rector/rector": "^2.1",
+        "roave/security-advisories": "dev-latest"
+    },
+    "suggest": {
+        "doctrine/dbal": "To persist the identifier value objects as Doctrine ORM column types.",
+        "doctrine/orm": "To map the identifier value objects with Doctrine ORM.",
+        "doctrine/mongodb-odm": "To persist the identifier value objects with Doctrine MongoDB ODM."
+    },
+    "autoload": {
+        "psr-4": {
+            "MSSTC4PHP\\ValueObject\\Identifiers\\Doctrine\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MSSTC4PHP\\ValueObject\\Identifiers\\Doctrine\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "authors": [
+        {
+            "name": "Maxim Shamaev",
+            "email": "maxim.shamaev@gmail.com"
+        }
+    ],
+    "extra": {
+        "bundle-standard": {
+            "kind": "library",
+            "runtime": "php84"
+        }
+    }
+}

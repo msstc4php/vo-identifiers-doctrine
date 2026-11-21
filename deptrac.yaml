@@ -1,0 +1,16 @@
+deptrac:
+  paths:
+    - ./src
+  layers:
+    - name: Orm
+      collectors:
+        - type: directory
+          value: src/Orm/.*
+    - name: Odm
+      collectors:
+        - type: directory
+          value: src/Odm/.*
+  ruleset:
+    # Orm and Odm never see each other; the absence of a rule is the machine form of the branch split.
+    Orm: ~
+    Odm: ~
