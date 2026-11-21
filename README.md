@@ -5,9 +5,8 @@ Doctrine ORM (DBAL) and MongoDB ODM types for [`msstc4php/vo-identifiers`](https
 
 ## Status
 
-Scaffold: `Orm\TypeRegistrar` and `Odm\TypeRegistrar` exist and register no type yet. One type per string value object of
-`vo-identifiers` follows, named `id_<snake_name>` (`id_isbn`, `id_container_number`, `id_imei`), with the column length of the
-longest value the class accepts.
+One ORM and one ODM type per string value object of `vo-identifiers` (37 per branch), registered by `Orm\TypeRegistrar` and
+`Odm\TypeRegistrar`.
 
 ## Install
 
@@ -35,6 +34,68 @@ Runtime requirements: `msstc4php/vo-identifiers`, `msstc4php/vo-base-doctrine ^1
 
 Bare Doctrine: call `Orm\TypeRegistrar::registerAll()` (or `Odm\TypeRegistrar::registerAll()`) once at bootstrap.
 Symfony: map `TypeRegistrar::types()` under `doctrine.dbal.types` (ORM) or `doctrine_mongodb.odm.types` (ODM).
+
+## Type names and lengths
+
+Every name is `id_` plus the snake_case of the class short name (`ContainerNumber` is `id_container_number`,
+`Iso15459Identifier` is `id_iso15459_identifier`). The ORM column is `VARCHAR(n)`, `n` being the characters of the longest
+stored form the class accepts. A class with no upper bound (`Ark`, `Doi`, `DataIdentifierField`, `DataIdentifierString`,
+`Iso15459Identifier`) maps to vo-base-doctrine's `AbstractTextVoType`, a CLOB/TEXT column; a TEXT column cannot carry a
+plain index on every platform (MySQL needs a prefix length), so index a derived key instead. The ODM field is a BSON
+string without a length.
+
+`n` counts characters, not bytes. Only `Doi`, `Ark` and the data-identifier classes can hold non-ASCII text, and they are
+text columns.
+
+On write a type accepts only its own value-object class: an `Isbn` given to `id_mmsi` throws `InvalidArgumentException`.
+A stored value that no longer parses throws the value object's own exception on read, not a DBAL `ConversionException`.
+
+Values are stored as the value object holds them (canonical form): ISSN and ORCID with their hyphens, a CAS number as
+`7732-18-5`, an IMEI without spaces, an MH10.8.2 message with its RS, GS and EOT control characters. Subscriber identities
+(`id_imsi`, `id_iccid`, `id_eid`, `id_imei`, `id_imeisv`) are stored in full, unmasked (`masked()` is for display).
+
+**Collation.** `Doi`, `Ark` and the data identifiers are case-sensitive. Under a case-insensitive collation two values that
+differ only in case collide in a unique index; give such columns a binary collation (MySQL `utf8mb4_bin`).
+
+| Type name | Value object | Column length | Length derived from |
+|---|---|---|---|
+| `id_air_waybill_number` | `Transport\AirWaybillNumber` | 11 | 3 + 8 digits, stored compact |
+| `id_ark` | `Publication\Ark` | CLOB/TEXT | the name part has no cap |
+| `id_cas_registry_number` | `Substance\CasRegistryNumber` | 12 | 2 to 7 digits + `-NN-N`, 12 characters with hyphens |
+| `id_container_number` | `Transport\ContainerNumber` | 11 | 4 letters + 7 digits |
+| `id_data_identifier_field` | `Transport\DataIdentifierField` | CLOB/TEXT | the data has no cap |
+| `id_data_identifier_string` | `Transport\DataIdentifierString` | CLOB/TEXT | any number of fields, no cap |
+| `id_doi` | `Publication\Doi` | CLOB/TEXT | the suffix has no cap |
+| `id_ec_number` | `Substance\EcNumber` | 9 | `NNN-NNN-N`, 9 characters |
+| `id_eid` | `Telecom\Eid` | 32 | 32 digits |
+| `id_energy_identification_code` | `Energy\EnergyIdentificationCode` | 16 | fixed 16 characters |
+| `id_hs_code` | `Trade\HsCode` | 6 | 6 digits, stored without separators |
+| `id_iata_airport_code` | `Transport\IataAirportCode` | 3 | 3 letters |
+| `id_icao_airport_code` | `Transport\IcaoAirportCode` | 4 | 4 letters |
+| `id_iccid` | `Telecom\Iccid` | 20 | `89` + 4 to 18 digits, at most 20 |
+| `id_imei` | `Telecom\Imei` | 15 | 14 or 15 digits |
+| `id_imeisv` | `Telecom\Imeisv` | 16 | 16 digits |
+| `id_imo_number` | `Transport\ImoNumber` | 10 | `IMO` + 7 digits |
+| `id_imsi` | `Telecom\Imsi` | 15 | 6 to 15 digits |
+| `id_isan` | `Publication\Isan` | 26 | ISO 15706-1: 16 hex root and episode, optionally 8 version and 2 check characters, stored compact: 26 |
+| `id_isbn` | `Publication\Isbn` | 13 | ISBN-13, 13 digits (ISBN-10 stores 10) |
+| `id_ismn` | `Publication\Ismn` | 13 | 13 digits, 979-0 form |
+| `id_isni` | `Publication\Isni` | 16 | 16 characters |
+| `id_iso15459_identifier` | `Transport\Iso15459Identifier` | CLOB/TEXT | `[A-Z0-9]{3,}`, no upper bound |
+| `id_isrc` | `Publication\Isrc` | 12 | 12 characters, stored compact |
+| `id_issn` | `Publication\Issn` | 9 | `NNNN-NNNC`, 9 characters with the hyphen |
+| `id_iswc` | `Publication\Iswc` | 11 | `T` + 10 digits |
+| `id_mmsi` | `Transport\Mmsi` | 9 | 9 digits |
+| `id_mpan` | `Energy\Mpan` | 21 | 13 or 21 digits, at most 21 |
+| `id_orcid` | `Publication\Orcid` | 19 | 4 groups of 4 with hyphens, 19 characters |
+| `id_ror` | `Publication\Ror` | 9 | `0` + 6 + 2 check, 9 characters |
+| `id_s10_item_identifier` | `Transport\S10ItemIdentifier` | 13 | 2 + 9 + 2 characters |
+| `id_tariff_code` | `Trade\TariffCode` | 10 | 8 or 10 digits, stored without separators |
+| `id_uic_vehicle_number` | `Transport\UicVehicleNumber` | 12 | 12 digits, stored compact |
+| `id_un_locode` | `Transport\UnLocode` | 5 | 2 + 3 characters |
+| `id_un_number` | `Substance\UnNumber` | 6 | `UN` + 4 digits |
+| `id_vin` | `Transport\Vin` | 17 | 17 characters |
+| `id_wmi` | `Transport\Wmi` | 3 | 3 characters |
 
 ## License
 
