@@ -5,8 +5,9 @@ Doctrine ORM (DBAL) and MongoDB ODM types for [`msstc4php/vo-identifiers`](https
 
 ## Status
 
-One ORM and one ODM type per string value object of `vo-identifiers` (37 per branch), registered by `Orm\TypeRegistrar` and
-`Odm\TypeRegistrar`.
+Initial 0.1.0 content (unreleased): one ORM and one ODM type per string value object of `vo-identifiers` (37 per branch),
+registered by `Orm\TypeRegistrar` and `Odm\TypeRegistrar`. Enums (`MmsiType`, `EicObjectType`) and `Internal\` helpers get no type.
+The ODM round trips need MongoDB and had not run before CI.
 
 ## Install
 
@@ -53,6 +54,13 @@ A stored value that no longer parses throws the value object's own exception on 
 Values are stored as the value object holds them (canonical form): ISSN and ORCID with their hyphens, a CAS number as
 `7732-18-5`, an IMEI without spaces, an MH10.8.2 message with its RS, GS and EOT control characters. Subscriber identities
 (`id_imsi`, `id_iccid`, `id_eid`, `id_imei`, `id_imeisv`) are stored in full, unmasked (`masked()` is for display).
+
+**Forms that `equals()` merges.** `Imei` (14 or 15 digits) and `Isbn` (ISBN-10 or ISBN-13) compare equal across forms, but the
+column holds the form given, so a UNIQUE index or a string lookup sees two values. Normalise before writing (`Imei::withCheckDigit()`
+or its first 14 digits, `Isbn::isbn13()`) when the column must deduplicate.
+
+**Registry tables.** The types store identifiers only; the one embedded table (AIM IAC register, edition 2026-06-16, in
+`vo-identifiers`) decodes and never refuses, and a new edition ships as a minor release of `vo-identifiers`, with no schema change.
 
 **Collation.** `Doi`, `Ark` and the data identifiers are case-sensitive. Under a case-insensitive collation two values that
 differ only in case collide in a unique index; give such columns a binary collation (MySQL `utf8mb4_bin`).

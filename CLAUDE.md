@@ -6,8 +6,8 @@ Guidance for Claude Code in this repository. Deep references live under `.claude
 
 `msstc4php/vo-identifiers-doctrine`: Doctrine ORM and MongoDB ODM types for `msstc4php/vo-identifiers` (publication, transport,
 telecom, substance, trade and energy identifiers). Built on the abstract types of `msstc4php/vo-base-doctrine`.
-PHP >= 8.4. No Symfony dependency; `Orm` and `Odm` never see each other (`deptrac.yaml`). The types themselves come with
-the value objects of `vo-identifiers`; this repository is the scaffold and the two empty `TypeRegistrar`s so far.
+PHP >= 8.4. No Symfony dependency; `Orm` and `Odm` never see each other (`deptrac.yaml`). One ORM and one ODM
+type per string value object (37 per branch), registered in both `TypeRegistrar`s.
 
 ## Common commands
 
