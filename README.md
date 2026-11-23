@@ -5,13 +5,23 @@ Doctrine ORM (DBAL) and MongoDB ODM types for [`msstc4php/vo-identifiers`](https
 
 ## Status
 
-Initial 0.1.0 content (unreleased): one ORM and one ODM type per string value object of `vo-identifiers` (37 per branch),
-registered by `Orm\TypeRegistrar` and `Odm\TypeRegistrar`. Enums (`MmsiType`, `EicObjectType`) and `Internal\` helpers get no type.
-The ODM round trips need MongoDB and had not run before CI.
+Stable since 1.0.0: from here on a breaking change needs 2.0. One ORM and one ODM type per string value object of
+`vo-identifiers` (37 per branch), registered by `Orm\TypeRegistrar` and `Odm\TypeRegistrar`. Enums
+(`Transport\MmsiStationType`, `Energy\EicObjectType`) and `Internal\` helpers get no type: map an enum with Doctrine's own
+`enumType` (ORM `#[Column(enumType: MmsiStationType::class)]`, ODM `#[Field(enumType: ...)]`), which stores the backed
+value (`'group_ship'`, `'X'`). The ODM round trips need MongoDB and run in CI's MongoDB service.
+
+## Backward compatibility
+
+Covered by 1.x: the type names (`id_<snake_name>`), the type classes and their `NAME` constants, the column lengths (each is
+the value object's `MAX_LENGTH`, frozen by `vo-identifiers` 1.x, so no minor needs a schema migration), the text-or-`VARCHAR`
+choice per type, and the stored string (the value object's canonical form, frozen by `vo-identifiers` 1.x). A type for a
+class that `vo-identifiers` adds in a minor is added in a minor. Not covered: exception message wording, and everything
+marked `@internal`.
 
 ## Install
 
-Not on Packagist yet; register the GitHub repositories:
+Register the GitHub repositories:
 
 ```json
 {
@@ -23,12 +33,12 @@ Not on Packagist yet; register the GitHub repositories:
         { "type": "vcs", "url": "https://github.com/msstc4php/vo-identifiers-doctrine" }
     ],
     "require": {
-        "msstc4php/vo-identifiers-doctrine": "^0.1"
+        "msstc4php/vo-identifiers-doctrine": "^1.0"
     }
 }
 ```
 
-Runtime requirements: `msstc4php/vo-identifiers`, `msstc4php/vo-base-doctrine ^1.2`; `doctrine/dbal` (ORM) or
+Runtime requirements: PHP >= 8.4, `msstc4php/vo-identifiers ^1.0`, `msstc4php/vo-base-doctrine ^1.3`; `doctrine/dbal` (ORM) or
 `doctrine/mongodb-odm` (ODM) is yours.
 
 ## Usage
@@ -60,9 +70,10 @@ Values are stored as the value object holds them (canonical form): ISSN and ORCI
 `7732-18-5`, an IMEI without spaces, an MH10.8.2 message with its RS, GS and EOT control characters. Subscriber identities
 (`id_imsi`, `id_iccid`, `id_eid`, `id_imei`, `id_imeisv`) are stored in full, unmasked (`masked()` is for display).
 
-**Forms that `equals()` merges.** `Imei` (14 or 15 digits) and `Isbn` (ISBN-10 or ISBN-13) compare equal across forms, but the
-column holds the form given, so a UNIQUE index or a string lookup sees two values. Normalise before writing (`Imei::withCheckDigit()`
-or its first 14 digits, `Isbn::isbn13()`) when the column must deduplicate.
+**Forms that `equals()` merges.** `Imei` (14 or 15 digits), `Isbn` (ISBN-10 or ISBN-13) and `Isan` (with or without check
+characters) compare equal across forms, but the column holds the form given, so a UNIQUE index or a string lookup sees two
+values. Normalise before writing (`Imei::withCheckDigit()` or its first 14 digits, `Isbn::toIsbn13()`) when the column must
+deduplicate.
 
 **Registry tables.** The types store identifiers only; the one embedded table (AIM IAC register, edition 2026-06-16, in
 `vo-identifiers`) decodes and never refuses, and a new edition ships as a minor release of `vo-identifiers`, with no schema change.

@@ -3,7 +3,7 @@
 ## Supported Versions
 
 The package follows semantic versioning. Security fixes are released for the latest
-minor on each supported major. Supported: 0.x.
+minor on each supported major. Supported: 1.x.
 
 Runtime requirement: PHP >= 8.4.
 

@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.0] - unreleased
+
+First stable release: from here on a breaking change needs 2.0.
+
+Backward compatibility (README "Backward compatibility"): 1.x covers the type names and classes, their `NAME` constants,
+the column lengths (the value objects' `MAX_LENGTH`, frozen by vo-identifiers 1.x), the text-or-`VARCHAR` choice and the
+stored strings. Message wording and `@internal` code are not covered.
+
+### Changed
+
+- Requires `msstc4php/vo-identifiers ^1.0` (was `^0.2`) and `msstc4php/vo-base-doctrine ^1.3` (was `^1.2`). No change in
+  this package's types: names, column lengths and stored forms are those of 0.2.
+- The vo-identifiers enum `Transport\MmsiType` is now `Transport\MmsiStationType`, so the bridge's `MmsiType` (the type of
+  `Mmsi`, `id_mmsi`) no longer shares its short name. Enums get no Doctrine type; map them with `enumType`.
+
+### Upgrading from 0.2
+
+- No code or schema change in this package. Values stored by 0.2 read unchanged. Follow the vo-identifiers 1.0.0
+  "Upgrading from 0.2" list for the value objects (`MmsiType` → `MmsiStationType` in `enumType` mappings).
+
 ## [0.2.0] - 2026-11-23
 
 ### Changed
