@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.0] - unreleased
+
+### Changed
+
+- Requires `msstc4php/vo-identifiers ^0.2` (was `^0.1`): vo-identifiers 0.2.0 relies on vo-base `^1.3` to validate identifiers again on `unserialize()`. No change in this package's code.
+
 ## [0.1.0] - 2026-11-22
 
 ### Added

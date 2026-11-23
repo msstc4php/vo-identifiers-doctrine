@@ -16,8 +16,8 @@ Local install against the sibling checkouts (`../vo-base`, `../vo-base-doctrine`
 
 `composer-local.json` is gitignored. Create it from `composer-ci.json`: replace the four VCS repositories with path
 repositories (`{"type": "path", "url": "../vo-base", "options": {"symlink": true}}`, same for `../vo-base-doctrine`,
-`../vo-gs1` and `../vo-identifiers`) and require `msstc4php/vo-base-doctrine` and `msstc4php/vo-base` as `dev-main as 1.2.0` and
-`msstc4php/vo-gs1` and `msstc4php/vo-identifiers` as `dev-main as 0.1.0`.
+`../vo-gs1` and `../vo-identifiers`) and require `msstc4php/vo-base-doctrine` and `msstc4php/vo-base` as `dev-main as 1.3.0` and
+`msstc4php/vo-gs1` as `dev-main as 0.1.0` and `msstc4php/vo-identifiers` as `dev-main as 0.2.0`.
 
 - `COMPOSER=composer-local.json make check`, `make test`, `make infection`, `make fix`.
 - The ODM integration tests need MongoDB (`MONGODB_URI`, default `mongodb://127.0.0.1:27017`) and skip themselves

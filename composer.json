@@ -39,7 +39,7 @@
     "require": {
         "php": ">=8.4",
         "msstc4php/vo-base-doctrine": "^1.2",
-        "msstc4php/vo-identifiers": "^0.1"
+        "msstc4php/vo-identifiers": "^0.2"
     },
     "require-dev": {
         "doctrine/dbal": "^4.4",
