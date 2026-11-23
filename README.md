@@ -9,7 +9,7 @@ Stable since 1.0.0: from here on a breaking change needs 2.0. One ORM and one OD
 `vo-identifiers` (37 per branch), registered by `Orm\TypeRegistrar` and `Odm\TypeRegistrar`. Enums
 (`Transport\MmsiStationType`, `Energy\EicObjectType`) and `Internal\` helpers get no type: map an enum with Doctrine's own
 `enumType` (ORM `#[Column(enumType: MmsiStationType::class)]`, ODM `#[Field(enumType: ...)]`), which stores the backed
-value (`'group_ship'`, `'X'`). The ODM round trips need MongoDB and run in CI's MongoDB service.
+value (`'group_ship'`, `'X'`); a 0.x mapping on `Transport\MmsiType` loads through vo-identifiers' deprecated alias until 2.0. The ODM round trips need MongoDB and run in CI's MongoDB service.
 
 ## Backward compatibility
 
@@ -105,7 +105,7 @@ differ only in case collide in a unique index; give such columns a binary collat
 | `id_isbn` | `Publication\Isbn` | 13 | ISBN-13, 13 digits (ISBN-10 stores 10) |
 | `id_ismn` | `Publication\Ismn` | 13 | 13 digits, 979-0 form |
 | `id_isni` | `Publication\Isni` | 16 | 16 characters |
-| `id_iso15459_identifier` | `Transport\Iso15459Identifier` | CLOB/TEXT | `[A-Z0-9]{3,}`, no upper bound |
+| `id_iso15459_identifier` | `Transport\Iso15459Identifier` | CLOB/TEXT | `[A-Z0-9][A-Z0-9/-]{2,}`, no upper bound |
 | `id_isrc` | `Publication\Isrc` | 12 | 12 characters, stored compact |
 | `id_issn` | `Publication\Issn` | 9 | `NNNN-NNNC`, 9 characters with the hyphen |
 | `id_iswc` | `Publication\Iswc` | 11 | `T` + 10 digits |

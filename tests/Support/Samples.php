@@ -92,7 +92,7 @@ final class Samples
         yield 'iata airport code' => ['id_iata_airport_code', IataAirportCode::from('SYD')];
         yield 'icao airport code' => ['id_icao_airport_code', IcaoAirportCode::from('EDDF')];
         yield 'imo number' => ['id_imo_number', ImoNumber::from('IMO8712345')];
-        yield 'iso15459 identifier' => ['id_iso15459_identifier', Iso15459Identifier::from('LN12345')];
+        yield 'iso15459 identifier' => ['id_iso15459_identifier', Iso15459Identifier::from('UN077991289ABC-1/2')];
         yield 'mmsi' => ['id_mmsi', Mmsi::from('366123456')];
         yield 's10 item identifier' => ['id_s10_item_identifier', S10ItemIdentifier::from('RA473124829CH')];
         yield 'uic vehicle number' => ['id_uic_vehicle_number', UicVehicleNumber::from('338447961008')];

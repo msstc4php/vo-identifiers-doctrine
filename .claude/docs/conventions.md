@@ -7,4 +7,4 @@
   `tests/Support/{Orm,Odm}/`, `tests/Unit/Contract/`). `Samples::strings()` holds one row per type with an at-max sample (one more character must be refused); text types carry length 0.
 - A `ValueObject` that is not a string (enum, DTO) or an `Internal\` helper gets no type; the contract test fails on a missing or extra one.
   Classes that cache state derived in `parse()` round-trip through their `value` alone (vo-base `^1.3` runs `parse()` again on unserialize), so the types need nothing special.
-- Enums (`MmsiStationType`, renamed from `MmsiType` in vo-identifiers 1.0 so that `<Vo>Type` stays free for the Doctrine types, and `EicObjectType`) are mapped by the user with Doctrine's `enumType`.
+- Enums (`MmsiStationType`, renamed from `MmsiType` in vo-identifiers 1.0 so that `<Vo>Type` stays free for the Doctrine types, and `EicObjectType`) are mapped by the user with Doctrine's `enumType`; `MmsiType` stays a deprecated `class_alias` in vo-identifiers until 2.0, so 0.x `enumType` mappings still load.
