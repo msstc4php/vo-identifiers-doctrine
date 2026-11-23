@@ -14,7 +14,7 @@ use MSSTC4PHP\ValueObject\Identifiers\Doctrine\Orm\TypeRegistrar as OrmRegistrar
 use MSSTC4PHP\ValueObject\Identifiers\Energy\EicObjectType;
 use MSSTC4PHP\ValueObject\Identifiers\Publication\Isbn;
 use MSSTC4PHP\ValueObject\Identifiers\Publication\PublicationIdentifierFactory;
-use MSSTC4PHP\ValueObject\Identifiers\Transport\MmsiType;
+use MSSTC4PHP\ValueObject\Identifiers\Transport\MmsiStationType;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -93,7 +93,7 @@ final class EveryIdentifierClassHasATypeTest extends TestCase
     {
         $mapped = \array_merge(\array_values($this->typeValueObjectClasses('orm')), \array_values($this->typeValueObjectClasses('odm')));
 
-        foreach ([EicObjectType::class, MmsiType::class, PublicationIdentifierFactory::class] as $part) {
+        foreach ([EicObjectType::class, MmsiStationType::class, PublicationIdentifierFactory::class] as $part) {
             self::assertFalse(new ReflectionClass($part)->implementsInterface(ValueObject::class), $part);
             self::assertNotContains($part, $mapped, $part);
         }
