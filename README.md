@@ -44,7 +44,7 @@ Runtime requirements: PHP >= 8.4, `msstc4php/vo-identifiers ^1.0`, `msstc4php/vo
 ## Usage
 
 Bare Doctrine: call `Orm\TypeRegistrar::registerAll()` (or `Odm\TypeRegistrar::registerAll()`) once at bootstrap.
-Symfony: map `TypeRegistrar::types()` under `doctrine.dbal.types` (ORM) or `doctrine_mongodb.odm.types` (ODM).
+Symfony: map `TypeRegistrar::types()` under `doctrine.dbal.types` (ORM) or the top-level `doctrine_mongodb.types` (ODM).
 
 ## Type names and lengths
 
