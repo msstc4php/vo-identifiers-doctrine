@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0] - unreleased
+
+### Changed
+
+- Allows `msstc4php/vo-identifiers` `^1.0 || ^2.0`. Type names, classes and column lengths are unchanged; vo-identifiers
+  2.0 removed the deprecated `Transport\MmsiType` alias, so an `enumType: MmsiType::class` mapping must name
+  `Transport\MmsiStationType` (see the vo-identifiers 2.0.0 "Upgrading from 1.x" block). `Isan` rows: 2.0's `equals()`
+  treats a `0000-0000` version as none, the stored strings stay as written, so equality lookups still compare the text.
+
 ## [1.0.0] - 2026-11-23
 
 First stable release: from here on a breaking change needs 2.0.

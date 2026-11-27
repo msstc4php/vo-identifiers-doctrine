@@ -9,7 +9,7 @@ Stable since 1.0.0: from here on a breaking change needs 2.0. One ORM and one OD
 `vo-identifiers` (37 per branch), registered by `Orm\TypeRegistrar` and `Odm\TypeRegistrar`. Enums
 (`Transport\MmsiStationType`, `Energy\EicObjectType`) and `Internal\` helpers get no type: map an enum with Doctrine's own
 `enumType` (ORM `#[Column(enumType: MmsiStationType::class)]`, ODM `#[Field(enumType: ...)]`), which stores the backed
-value (`'group_ship'`, `'X'`); a 0.x mapping on `Transport\MmsiType` loads through vo-identifiers' deprecated alias until 2.0. The ODM round trips need MongoDB and run in CI's MongoDB service.
+value (`'group_ship'`, `'X'`); map `Transport\MmsiStationType` (vo-identifiers 2.0 removed the 0.x name `Transport\MmsiType`). The ODM round trips need MongoDB and run in CI's MongoDB service.
 
 ## Backward compatibility
 
